@@ -1,0 +1,26 @@
+﻿@page "/admin"
+@using Microsoft.AspNetCore.Authorization;
+@*@attribute [Authorize(Roles = "Admin")]*@
+
+<h3>Admin main page</h3>
+
+<div class="container text-center">
+    <div class="row align-items-center">
+        <div class="col">
+            <button type="button" class="btn btn-primary">Add movie</button>
+        </div>
+        <div class="col">
+            <button type="button" class="btn btn-primary">Add actor</button>
+        </div>
+        <div class="col">
+            <button type="button" class="btn btn-primary">Add director</button>
+        </div>
+        <div class="col">
+            <button type="button" class="btn btn-primary">Add genre</button>
+        </div>
+    </div>
+</div>
+
+@code {
+
+}

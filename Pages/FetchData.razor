@@ -1,0 +1,86 @@
+﻿@page "/fetchdata"
+@using GraphFlix_FrontEnd.Models;
+@using GraphFlix_FrontEnd.Pages.LoginComponents
+@inject HttpClient Http
+@inject IJSRuntime jsr
+
+<h1>Movie recommendations</h1>
+
+@{string genres = "";}
+@if (string.IsNullOrEmpty(userdata))
+{
+    <p>LOGIN TO ACCESS THIS DATA</p>
+}
+else
+{
+    if (recommendedMovies == null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else
+    {
+        <p>Recommended for you</p>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Genres</th>
+                    <th>Release date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var movie in recommendedMovies)
+                {
+                    genres = "";
+                    <tr>
+                        <td>@movie.Title</td>
+                        <td>
+                            @foreach (var item in movie.Genres)
+                            {
+                                genres += movie.Genres.IndexOf(item) == 0 ? item.Name : ", " + item.Name;
+                            }
+                            @genres
+                        </td>
+                        <td>@movie.ReleaseDate</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+}
+
+@code {
+    private List<MovieModel> recommendedMovies;
+    string userdata;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        userdata = await jsr.InvokeAsync<string>("localStorage.getItem", "user").ConfigureAwait(false);
+
+        try
+        {
+            var requestMsg = new HttpRequestMessage(HttpMethod.Get, $"/api/Movie/recommended");
+            requestMsg.Headers.Add("Authorization", "Bearer " + userdata.Split(';', 2)[0]);
+            var response = await Http.SendAsync(requestMsg);
+            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized) // NOTE: THEN TOKEN HAS EXPIRED
+            {
+                await jsr.InvokeVoidAsync("localStorage.removeItem", "user").ConfigureAwait(false);
+                userdata = null;
+            }
+            else if (response.StatusCode == System.Net.HttpStatusCode.NoContent)
+            {
+                recommendedMovies = null;
+            }
+            else if (response.IsSuccessStatusCode)
+            {
+                recommendedMovies = await response.Content.ReadFromJsonAsync<List<MovieModel>>();
+            }
+        }
+        catch (Exception ex)
+        {
+
+        }
+    }
+}

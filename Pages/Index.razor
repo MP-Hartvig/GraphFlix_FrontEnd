@@ -1,0 +1,68 @@
+﻿@page "/"
+@using GraphFlix_FrontEnd.Models;
+@inject HttpClient Http
+@inject IJSRuntime jsr
+
+<PageTitle>GraphFlix</PageTitle>
+
+<h1>Welcome to GraphFlix</h1>
+
+Browse our movie list below.
+
+@{string genres = "";}
+@if (movieList == null)
+{
+<p><em>Loading...</em></p>
+}
+else
+{
+<p><a href="javascript:;" @onclick="GetMovieList">Click to get movie list</a></p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Genres</th>
+            <th>Release date</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var movie in movieList)
+        {
+            genres = "";
+            <tr>
+                <td>@movie.Title</td>
+                <td>
+                    @foreach (var item in movie.Genres)
+                    {
+                            genres += movie.Genres.IndexOf(item) == 0 ? item.Name : ", " + item.Name;
+                    }
+                    @genres
+                </td>
+                <td>@movie.ReleaseDate</td>
+            </tr>
+        }
+    </tbody>
+</table>
+}
+
+@code {
+    private List<MovieModel> movieList = new List<MovieModel> { new MovieModel { Title = "Test", ReleaseDate = DateOnly.FromDateTime(DateTime.Now), Genres = new List<GenreModel> { new GenreModel { Id = "1", Name = "Test"} } } };
+
+    private async Task GetMovieList()
+    {
+        try
+        {
+            var requestMsg = new HttpRequestMessage(HttpMethod.Get, $"/api/Movie");
+            var response = await Http.SendAsync(requestMsg);
+
+            if (response.IsSuccessStatusCode)
+            {
+                movieList = await response.Content.ReadFromJsonAsync<List<MovieModel>>();
+            }
+        }
+        catch (Exception ex)
+        {
+
+        }
+    }
+}

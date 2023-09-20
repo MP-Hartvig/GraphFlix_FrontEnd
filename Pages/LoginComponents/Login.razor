@@ -1,0 +1,44 @@
+﻿@page "/login"
+@using GraphFlix_FrontEnd.Models;
+@using System.Threading;
+@using Microsoft.AspNetCore.Components.Authorization;
+@inject HttpClient Http
+@inject IJSRuntime jsr
+@inject NavigationManager nav
+@inject AuthenticationStateProvider asp
+
+<EditForm Model="user" OnValidSubmit="OnValid" style="max-width:500px;">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="mb-2">
+        <InputText class="form-control" @bind-Value="user.Username" placeholder="Enter Email"></InputText>
+    </div>
+    <div class="mb-2">
+        <InputText type="password" class="form-control" @bind-Value="user.Password" placeholder="Enter Password"></InputText>
+    </div>
+    <div class="d-flex flex-row-reverse">
+        <button class="btn btn-secondary">login</button>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter] public EventCallback OnSubmit { get; set; }
+
+    LoginModel user = new LoginModel();
+
+    private async Task OnValid()
+    {
+        Uri url = new Uri("https://localhost:7172/api/Auth");
+        using (var msg = await Http.PostAsJsonAsync<LoginModel>(url, user, CancellationToken.None))
+        {
+            if (msg.IsSuccessStatusCode)
+            {
+                TokenModel token = await msg.Content.ReadFromJsonAsync<TokenModel>();
+                    await ((CustomAuthenticationStateProvider)asp).SetTokenAsync(token.TokenString);
+                await asp.GetAuthenticationStateAsync();
+
+                nav.NavigateTo("/fetchdata");
+            }
+        }
+    }
+}

@@ -1,0 +1,69 @@
+﻿@using GraphFlix_FrontEnd.Pages.LoginComponents
+@inherits LayoutComponentBase
+@inject IJSRuntime jsr
+@inject NavigationManager nav
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="top-row px-4">
+            <AuthorizeView>
+                <Authorized>
+                    <button class="btn btn-info p-2" @onclick="GoToLogout">Logout</button>
+                </Authorized>
+                <NotAuthorized>
+                    <button class="btn btn-primary p-2" @onclick="() => ModalDialogRegister.Open()">Register</button>
+                    <button class="btn btn-secondary p-2" @onclick="() => ModalDialogLogin.Open()">Login</button>
+                </NotAuthorized>
+            </AuthorizeView>
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+<ModalDialog @ref="@ModalDialogRegister" Title="Register">
+    <div class="column">
+        <Register></Register>
+    </div>
+</ModalDialog>
+
+<ModalDialog @ref="@ModalDialogLogin" Title="Login">
+
+    <div class="column">
+
+        <Login OnSubmit="ModalDialogLogin.Close"></Login>
+    </div>
+</ModalDialog>
+
+@code {
+    private ModalDialog ModalDialogRegister { get; set; }
+    private ModalDialog ModalDialogLogin { get; set; }
+
+    string userdata;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        try
+        {
+            userdata = await jsr.InvokeAsync<string>("localStorage.getItem", "user").ConfigureAwait(false);
+
+        }
+        catch (Exception ex)
+        {
+
+        }
+    }
+
+    private void GoToLogout()
+    {
+        nav.NavigateTo("/logout");
+    }
+}

@@ -1,0 +1,44 @@
+﻿@page "/register"
+@using GraphFlix_FrontEnd.Models
+@using System.Threading;
+@inject HttpClient Http
+
+<EditForm Model="reg" OnValidSubmit="OnValid">
+	<DataAnnotationsValidator />
+	<ValidationSummary />
+	<div class="mb-2">
+		<InputText class="form-control" @bind-Value="reg.Username" placeholder="Enter email"></InputText>
+	</div>
+	<div class="mb-2">
+		<InputText type="password" class="form-control" @bind-Value="reg.Password" placeholder="Enter password"></InputText>
+	</div>
+	<div class="mb-2">
+		<InputText type="password" class="form-control" @bind-Value="reg.confirmpwd" placeholder="Confirm password"></InputText>
+	</div>
+	<div class="d-flex flex-row-reverse">
+		<button class="btn btn-secondary p-2">Create</button>
+	</div>
+</EditForm>
+
+@code {
+	RegModel reg = new RegModel();
+
+	private async Task OnValid()
+	{
+		using (var msg = await Http.PostAsJsonAsync<RegModel>("/api/User/Create", reg, CancellationToken.None))
+		{
+			if (msg.IsSuccessStatusCode)
+			{
+				//LoginModel result = await msg.Content.ReadFromJsonAsync<LoginModel>();
+				//message = result.message;
+				//if (result.success)
+				//{
+				//	message += " Please LOGIN to continue.";
+				//	login = "Click here to LOGIN.";
+				//}
+				//else
+				//	isDisabled = false;
+			}
+		}
+	}
+}
