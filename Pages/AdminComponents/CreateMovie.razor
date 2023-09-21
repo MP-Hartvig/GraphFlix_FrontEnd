@@ -1,0 +1,50 @@
+﻿@using GraphFlix_FrontEnd.Models;
+@inject HttpClient Http
+@inject AuthenticationStateProvider asp
+@inject NavigationManager nav
+
+<EditForm Model="@movie" OnValidSubmit="OnValid">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <InputText class="form-control" @bind-Value="movie.Title" placeholder="Enter movie title" />
+    <InputDate class="form-control" @bind-Value="movie.ReleaseDate" placeholder="Pick release date" />
+    <InputSelect class="form-control" @bind-Value="movie.Genres" placeholder="Pick movie genres" multiple>
+        <option value="">Select genres</option>
+        @foreach (GenreModel item in genres)
+        {
+            <option value="@item.Id">@item.Name</option>
+        }
+    </InputSelect>
+    <div class="d-flex flex-row-reverse">
+        <button class="btn btn-primary" @onclick="@(() => OnSubmit.InvokeAsync())">Submit</button>
+    </div>
+</EditForm>
+
+
+@code {
+    [Parameter] public EventCallback OnSubmit { get; set; }
+    List<GenreModel> genres = new List<GenreModel> { new GenreModel { Id = "1", Name = "Action" }, new GenreModel { Id = "2", Name = "Drama" } };
+
+    MovieModel movie = new MovieModel();
+
+    private async Task OnValid()
+    {
+        using (var msg = await Http.PostAsJsonAsync<MovieModel>("api/Movie", movie, CancellationToken.None))
+        {
+            if (msg.IsSuccessStatusCode)
+            {
+                StateHasChanged();
+            }
+        }
+    }
+
+    private void OnGenreSelectionChange()
+    {
+
+    }
+
+    private void GetMovieGenres()
+    {
+
+    }
+}

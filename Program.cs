@@ -1,4 +1,3 @@
-using Blazored.LocalStorage;
 using GraphFlix_FrontEnd;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
@@ -12,7 +11,6 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7172") });
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 builder.Services.AddIdentityCore<IdentityUser>().AddRoles<IdentityRole>();
-builder.Services.AddBlazoredLocalStorage();
 
 builder.Services.AddAuthorizationCore();
 

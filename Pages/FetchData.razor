@@ -26,6 +26,8 @@ else
                     <th>Title</th>
                     <th>Genres</th>
                     <th>Release date</th>
+                    <th>Viewed</th>
+                    <th>Recommended</th>
                 </tr>
             </thead>
             <tbody>
@@ -37,11 +39,23 @@ else
                         <td>
                             @foreach (var item in movie.Genres)
                             {
-                                genres += movie.Genres.IndexOf(item) == 0 ? item.Name : ", " + item.Name;
+                                genres += movie.Genres.IndexOf(item) == 0 ? item.Name : $", {item.Name}";
                             }
                             @genres
                         </td>
                         <td>@movie.ReleaseDate</td>
+                        <td>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckView" @onclick="() => SetViewStatus(movie)">
+                                <label class="form-check-label" for="flexSwitchCheckDefault"></label>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckRecommend" @onclick="() => SetRecommendStatus(movie)">
+                                <label class="form-check-label" for="flexSwitchCheckDefault"></label>
+                            </div>
+                        </td>
                     </tr>
                 }
             </tbody>
@@ -61,7 +75,7 @@ else
 
         try
         {
-            var requestMsg = new HttpRequestMessage(HttpMethod.Get, $"/api/Movie/recommended");
+            var requestMsg = new HttpRequestMessage(HttpMethod.Get, $"/api/Recommend");
             requestMsg.Headers.Add("Authorization", "Bearer " + userdata.Split(';', 2)[0]);
             var response = await Http.SendAsync(requestMsg);
             if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized) // NOTE: THEN TOKEN HAS EXPIRED
@@ -82,5 +96,15 @@ else
         {
 
         }
+    }
+
+    private void SetViewStatus(MovieModel movie)
+    {
+        
+    }
+
+    private void SetRecommendStatus(MovieModel movie)
+    {
+
     }
 }

@@ -9,47 +9,47 @@
 
 Browse our movie list below.
 
-@{string genres = "";}
 @if (movieList == null)
 {
-<p><em>Loading...</em></p>
+    <p><em>Loading...</em></p>
 }
 else
 {
-<p><a href="javascript:;" @onclick="GetMovieList">Click to get movie list</a></p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Title</th>
-            <th>Genres</th>
-            <th>Release date</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var movie in movieList)
-        {
-            genres = "";
+    <table class="table">
+        <thead>
             <tr>
-                <td>@movie.Title</td>
-                <td>
-                    @foreach (var item in movie.Genres)
-                    {
-                            genres += movie.Genres.IndexOf(item) == 0 ? item.Name : ", " + item.Name;
-                    }
-                    @genres
-                </td>
-                <td>@movie.ReleaseDate</td>
+                <th>Title</th>
+                <th>Genres</th>
+                <th>Release date</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var movie in movieList)
+            {
+                string genres = "";
+                <tr>
+                    <td>@movie.Title</td>
+                    <td>
+                        @foreach (var item in movie.Genres)
+                        {
+                            genres += movie.Genres.IndexOf(item) == 0 ? item.Name : $", {item.Name}";
+                        }
+                        @genres
+                    </td>
+                    <td>@movie.ReleaseDate</td>
+                </tr>
+            }
+        </tbody>
+    </table>
 }
 
 @code {
-    private List<MovieModel> movieList = new List<MovieModel> { new MovieModel { Title = "Test", ReleaseDate = DateOnly.FromDateTime(DateTime.Now), Genres = new List<GenreModel> { new GenreModel { Id = "1", Name = "Test"} } } };
+    private List<MovieModel> movieList;
 
-    private async Task GetMovieList()
+    protected override async Task OnInitializedAsync()
     {
+        await base.OnInitializedAsync();
+
         try
         {
             var requestMsg = new HttpRequestMessage(HttpMethod.Get, $"/api/Movie");

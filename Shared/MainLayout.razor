@@ -8,28 +8,39 @@
         <NavMenu />
     </div>
 
+
     <main>
-        <div class="top-row px-4">
-            <AuthorizeView>
-                <Authorized>
+        <SwitchButton Checked="true"></SwitchButton>
+
+        <AuthorizeView>
+
+            <Authorized>
+                <div class="top-row d-flex justify-content-end">
                     <button class="btn btn-info p-2" @onclick="GoToLogout">Logout</button>
-                </Authorized>
-                <NotAuthorized>
+                </div>
+            </Authorized>
+
+            <NotAuthorized>
+                <div class="top-row d-flex justify-content-between">
                     <button class="btn btn-primary p-2" @onclick="() => ModalDialogRegister.Open()">Register</button>
                     <button class="btn btn-secondary p-2" @onclick="() => ModalDialogLogin.Open()">Login</button>
-                </NotAuthorized>
-            </AuthorizeView>
-        </div>
+                </div>
+            </NotAuthorized>
+
+        </AuthorizeView>
+
 
         <article class="content px-4">
             @Body
         </article>
+
     </main>
+
 </div>
 
 <ModalDialog @ref="@ModalDialogRegister" Title="Register">
     <div class="column">
-        <Register></Register>
+        <Register OnSubmit="CloseRegisterModal"></Register>
     </div>
 </ModalDialog>
 
@@ -37,7 +48,7 @@
 
     <div class="column">
 
-        <Login OnSubmit="ModalDialogLogin.Close"></Login>
+        <Login OnSubmit="CloseLoginModal"></Login>
     </div>
 </ModalDialog>
 
@@ -65,5 +76,15 @@
     private void GoToLogout()
     {
         nav.NavigateTo("/logout");
+    }
+
+    private void CloseLoginModal()
+    {
+        ModalDialogLogin.Close();
+    }
+
+    private void CloseRegisterModal()
+    {
+        ModalDialogRegister.Close();
     }
 }
